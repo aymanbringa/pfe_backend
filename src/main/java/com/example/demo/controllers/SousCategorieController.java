@@ -2,8 +2,7 @@ package com.example.demo.controllers;
 
 import java.io.Serializable;
 import java.util.List;
-
-
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,6 +42,8 @@ public class SousCategorieController {
 
 	@GetMapping("/sous-categories/{id}")
 	public ResponseEntity<SousCategorie> getSousCategorieById(@PathVariable Long id) {
+    	System.out.println("sfds12");
+
 	    java.util.Optional<SousCategorie> sousCategorie = sousCategorieService.findById(id);
 	    return sousCategorie.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
@@ -75,4 +76,9 @@ public class SousCategorieController {
 	        return ResponseEntity.notFound().build();
 	    }
 	}
+    @GetMapping("/sous-categories/ByID/{categorieId}")
+    public List<SousCategorie> getSousCategoriesByCategorieId(@PathVariable Long categorieId) {
+    	System.out.println("asj");
+        return sousCategorieService.getSousCategoriesByCategorieId(categorieId);
+    }
 }

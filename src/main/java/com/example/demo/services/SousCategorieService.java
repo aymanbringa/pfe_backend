@@ -5,6 +5,7 @@ import java.util.List;
 
 import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.models.SousCategorie;
@@ -35,6 +36,9 @@ public class SousCategorieService {
 
     public void deleteById(Long id) {
         sousCategorieRepository.deleteById(id);
+    }
+    public List<SousCategorie> getSousCategoriesByCategorieId(Long categorieId) {
+        return sousCategorieRepository.findByCategorieId(categorieId);
     }
 
 }
