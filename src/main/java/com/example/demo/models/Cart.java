@@ -20,14 +20,15 @@ public class Cart {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     public Cart() {}
 
-    public Cart(List<CartItem> cartItems) {
-        this.cartItems = cartItems;
+    public Cart(User user) {
+        this.user = user;
     }
 
     public Long getId() {
@@ -40,6 +41,15 @@ public class Cart {
 
     public void setCartItems(List<CartItem> cartItems) {
         this.cartItems = cartItems;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        user.getCarts().add(this); // add this cart to the user's list of carts
     }
 
     public void addCartItem(CartItem cartItem) {
@@ -63,11 +73,6 @@ public class Cart {
             total += cartItem.getSubTotal();
         }
         return total;
-    }
-
-    public Cart(Long id) {
-        this.id = id;
-        this.cartItems = new ArrayList<>();
     }
 
     public CartItem findCartItemByProduitId(Long produitId) {

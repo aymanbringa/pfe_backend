@@ -28,20 +28,12 @@ public class CartController {
     private UserDetailsService userDetailsService;
 
     @PostMapping("/cart")
-    public ResponseEntity<?> addToCart(@RequestParam Long productId, @RequestParam int quantity) {
-    	System.out.println("ksjlhd");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
-            Long userId = Long.parseLong(auth.getName());
-        	System.out.println("ksjlhd123");
+    public ResponseEntity<?> addToCart(@RequestParam Long productId, @RequestParam int quantity,@RequestParam Long userId) {
+        System.out.println("productId: " + userId);
+        	System.out.println("ksjlhd1234");
             cartService.addProductToCart(userId, productId, quantity);
             return ResponseEntity.ok().build();
-        } else {
-        	System.out.println("00000");
 
-            // handle case where user is not authenticated or anonymous
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
     }
 
 
