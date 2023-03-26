@@ -1,4 +1,6 @@
 package com.example.demo.controllers;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.models.Cart;
+import com.example.demo.models.CartItem;
 import com.example.demo.services.CartService;
-import com.example.demo.services.UserDetailsServiceImpl;
 import com.example.demo.services.UserDetailsImpl;
-
 
 @RestController
 @RequestMapping("/api/auth")
@@ -28,15 +29,10 @@ public class CartController {
     private UserDetailsService userDetailsService;
 
     @PostMapping("/cart")
-    public ResponseEntity<?> addToCart(@RequestParam Long productId, @RequestParam int quantity,@RequestParam Long userId) {
-        System.out.println("productId: " + userId);
-        	System.out.println("ksjlhd1234");
-            cartService.addProductToCart(userId, productId, quantity);
-            return ResponseEntity.ok().build();
-
+    public ResponseEntity<?> addToCart(@RequestParam Long productId, @RequestParam int quantity, @RequestParam Long userId) {
+        cartService.addProductToCart(userId, productId, quantity);
+        return ResponseEntity.ok().build();
     }
-
-
 
     @PostMapping("/cart/delete")
     public ResponseEntity<?> removeFromCart(@RequestParam Long productId, @RequestParam int quantity) {
@@ -48,20 +44,24 @@ public class CartController {
     }
 
 
-
     @GetMapping("/cart")
-    public ResponseEntity<Double> getTotal() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = Long.parseLong(auth.getName());
-        double total = cartService.getTotal(userId);
-        return ResponseEntity.ok().body(total);
+    public ResponseEntity<List<CartItem>> getCart(@RequestParam Long userId) {
+      try {
+        Cart cart = cartService.getCartByUserId(userId);
+        if (cart == null) {
+          return ResponseEntity.notFound().build();
+        }
+        List<CartItem> cartItems = cart.getCartItems();
+        if (cartItems == null) {
+          cartItems = new ArrayList<>();
+        }
+        System.out.println(cartItems);
+        return ResponseEntity.ok().body(cartItems);
+      } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+      }
     }
 
-    @GetMapping("/cart/content")
-    public ResponseEntity<Cart> getCart() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = Long.parseLong(auth.getName());
-        Cart cart = cartService.getCartByUserId(userId);
-        return ResponseEntity.ok().body(cart);
-    }
+
 }

@@ -12,6 +12,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 public class Cart {
     @Id
@@ -23,6 +26,8 @@ public class Cart {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties("carts")
+
     private User user;
 
     public Cart() {}
@@ -83,4 +88,10 @@ public class Cart {
         }
         return null;
     }
+
+	@Override
+	public String toString() {
+		return "Cart [id=" + id + ", cartItems=" + cartItems + ", user=" + user + "]";
+	}
+    
 }
