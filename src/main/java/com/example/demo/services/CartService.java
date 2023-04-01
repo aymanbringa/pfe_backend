@@ -1,5 +1,6 @@
 package com.example.demo.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import com.example.demo.models.User;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.ProduitRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.cartItemRepositry;
 
 @Service
 public class CartService {
@@ -21,12 +23,35 @@ public class CartService {
 
     @Autowired
     private CartRepository cartRepository;
+    @Autowired
+    private cartItemRepositry cartItemRepositry;
     
     @Autowired
     private ProduitRepository produitRepository;
 
     @Autowired
     private UserRepository userRepository;
+    public Optional<Cart> getCartById(Long cartId) {
+        logger.info("Retrieving cart with ID {}", cartId);
+        return cartRepository.findById(cartId);
+    }
+    
+    public List<CartItem> getCartItemsByCart(Cart cart) {
+        logger.info("Retrieving cart items for cart with ID {}", cart.getId());
+        return cart.getCartItems();
+    }
+    public Long getCartIdByCartItem(Long cartItemId) {
+        Optional<CartItem> optionalCartItem = cartItemRepositry.findById(cartItemId);
+        if (optionalCartItem.isPresent()) {
+            CartItem cartItem = optionalCartItem.get();
+            Optional<Cart> optionalCart = cartRepository.findById(cartItem.getCart().getId());
+            if (optionalCart.isPresent()) {
+                return optionalCart.get().getId();
+            }
+        }
+        return null;
+    }
+
 
     public Cart getCartByUserId(Long userId) {
         logger.info("Retrieving cart for user with ID {}", userId);
@@ -91,4 +116,7 @@ public class CartService {
         }
         return cart.getTotal();
     }
+    
+
+    
 }

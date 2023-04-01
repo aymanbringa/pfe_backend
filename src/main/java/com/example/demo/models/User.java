@@ -33,6 +33,9 @@ public class User {
   @NotBlank
   @Size(max = 120)
   private String password;
+  
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<Commande> commandes;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "user_roles", 

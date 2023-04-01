@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,22 +47,47 @@ public class CartController {
 
     @GetMapping("/cart")
     public ResponseEntity<List<CartItem>> getCart(@RequestParam Long userId) {
-      try {
-        Cart cart = cartService.getCartByUserId(userId);
-        if (cart == null) {
-          return ResponseEntity.notFound().build();
+        try {
+            Cart cart = cartService.getCartByUserId(userId);
+            if (cart == null) {
+                return ResponseEntity.notFound().build();
+            }
+            List<CartItem> cartItems = new ArrayList<>();
+            for (CartItem cartItem : cart.getCartItems()) {
+                cartItems.add(cartItem);
+            }
+            return ResponseEntity.ok().body(cartItems);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        List<CartItem> cartItems = cart.getCartItems();
-        if (cartItems == null) {
-          cartItems = new ArrayList<>();
-        }
-        System.out.println(cartItems);
-        return ResponseEntity.ok().body(cartItems);
-      } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-      }
     }
+    @GetMapping("/cart/content")
+    public double totale(@RequestParam Long userId)
+    {	System.out.println("jksgjdgjsdgfjshqgf");
+    	return cartService.getTotal(userId);
+    }
+    @GetMapping("/cart/items")
+    public ResponseEntity<List<CartItem>> getCartItemsByCartId(@RequestParam Long cartId) {
+        try {
+            Optional<Cart> optionalCart = cartService.getCartById(cartId);
+            if (optionalCart.isPresent()) {
+                Cart cart = optionalCart.get();
+                List<CartItem> cartItems = cartService.getCartItemsByCart(cart);
+                return ResponseEntity.ok().body(cartItems);
+            } else {
+                throw new RuntimeException("Cart not found for id :: " + cartId);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+
+
+
 
 
 }
